@@ -13,8 +13,20 @@ class QuestionsController extends AppController {
     
 	// util constants
 	const JSON_DECODE =  'json_decode';
-	const AJAX = 'ajax';
-	
+	const AJAX = 'ajax';		
+
+	// constantes de paginação
+	const ROWS_PER_PAGE = 99;
+
+	/**
+	 * (non-PHPdoc)
+	 * @see \App\Controller\AppController::initialize()
+	 */
+    public function initialize() {    	
+        parent::initialize();        
+        $this->loadComponent('Paginator');
+    }       
+    
 	/**
 	 * Retorna valor de parâmetro da URL
 	 * 
@@ -111,6 +123,32 @@ class QuestionsController extends AppController {
 			return array();
 		}
 	}
+	
+	/**
+	 * Verifica e retorna limite de itens por pagina
+	 * @return integer - limit per page
+	 */
+	private function setPageLimit($rpp){
+		
+		if($rpp != null){
+			return array('limit'=> $rpp);
+		}else{
+			return array('limit'=> self::ROWS_PER_PAGE);
+		}
+	}
+	
+	/**
+	 * Retorna número da página informada por parâmetro
+	 * @param string $page - numero da página passado por parâmetro
+	 * @return string | NULL
+	 */
+	private function getNumberPage($page){
+		if($page != null){
+			return $page;
+		}else{
+			return null;
+		}
+	}
 		
 	/**
 	 * Retorna arry de objetos do tipo question no formato json a partir dos valores pasados 
@@ -131,17 +169,21 @@ class QuestionsController extends AppController {
     	$sort = $this->getURLParam('sort');
     	
     	// get url param score
-    	$score = $this->getURLParam('score');
+    	$score = $this->getURLParam('score');    	    		        	  
     	    	
-		// TODO: implement filper per page ($page)    	
-
-    	// TODO: implement filter results per page (rpp)
+    	// seta página informada (número da página)
+    	$this->request->params['named']['page'] = $page; 
+    	
+    	// set page limit
+    	$this->paginate = $this->setPageLimit($rpp);    	    	    			
     	
     	// execute query
     	$questions = $this->Questions->find()
     		->where($this->getScoreArray($score))
     		->order($this->getSortArray($sort));
-    		
+    	
+    	$questions = $this->paginate('Questions');
+    	
     	// itera o array organizando dados
     	$mainData = $this->iterateOutputArray($questions);    	   
     	    	    
