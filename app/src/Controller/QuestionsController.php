@@ -172,7 +172,7 @@ class QuestionsController extends AppController {
     	$score = $this->getURLParam('score');    	    		        	  
     	    	
     	// seta página informada (número da página)
-    	$this->request->params['named']['page'] = $page; 
+    	$this->request->params['named']['page'] = $this->getNumberPage($page); 
     	
     	// set page limit
     	$this->paginate = $this->setPageLimit($rpp);    	    	    			
