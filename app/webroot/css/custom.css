@@ -1,0 +1,40 @@
+.main .h1, .main h1 {
+    font-size: 32px;
+    color: #555;
+    margin: 20px 0;
+}
+
+.main .form-container{
+	background: #efefef; 
+	padding: 15px 20px;
+	border-radius: 2px;
+}
+
+.main .form-container .form-control{
+	height: 30px;
+	padding: 5px 12px;
+}	
+
+.main .form-container input[type=text], .main .btn{
+	border-radius: 2px;
+}
+
+.main .form-container .form-group > label{
+	font-weight: normal;
+}
+
+.main .form-container .btn{
+	float: right;	
+}
+
+.main .btn{
+	padding: 4px 12px;
+}
+
+.main .output-data{
+	margin: 15px;
+}
+
+.main .loading{
+	width: 20px;
+}
