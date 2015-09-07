@@ -17,6 +17,7 @@ class QuestionsController extends AppController {
 
 	// constantes de paginação
 	const ROWS_PER_PAGE = 99;
+	const DEFAULT_PAGE = 1;
 
 	/**
 	 * (non-PHPdoc)
@@ -131,9 +132,23 @@ class QuestionsController extends AppController {
 	private function setPageLimit($rpp){
 		
 		if($rpp != null){
-			return array('limit'=> $rpp);
+			return $rpp;
 		}else{
-			return array('limit'=> self::ROWS_PER_PAGE);
+			return self::ROWS_PER_PAGE;
+		}
+	}
+	
+	/**
+	 * Return page number 
+	 * @param $page - numer page
+	 * @return 1 | string - valor 1 para parâmetro não informado e $page para valor informado 
+	 */
+	private function setPage($page){
+	
+		if($page != null){
+			return $page;
+		}else{
+			return self::DEFAULT_PAGE;
 		}
 	}
 	
@@ -148,7 +163,7 @@ class QuestionsController extends AppController {
 		}else{
 			return null;
 		}
-	}
+	}		
 		
 	/**
 	 * Retorna arry de objetos do tipo question no formato json a partir dos valores pasados 
@@ -171,18 +186,31 @@ class QuestionsController extends AppController {
     	// get url param score
     	$score = $this->getURLParam('score');    	    		        	  
     	    	
+    	
+    	/**
+    	 * Otimizado - utilizado paginação na query
+    	 * @author Diego Andre Poli <diego@andrepoli@gmail.com>
+    	 */
+    	
     	// seta página informada (número da página)
-    	$this->request->params['named']['page'] = $this->getNumberPage($page); 
+    	// $this->request->params['named']['page'] = $this->getNumberPage($page); 
     	
     	// set page limit
-    	$this->paginate = $this->setPageLimit($rpp);    	    	    			
+    	// $this->paginate = $this->setPageLimit($rpp);    	    	    			
     	
     	// execute query
-    	$questions = $this->Questions->find()
+		// $questions = $this->Questions->find()
+		// ->where($this->getScoreArray($score))
+		// ->order($this->getSortArray($sort));    	    	    	    
+
+    	$questions = $this->Questions->find('all')
     		->where($this->getScoreArray($score))
-    		->order($this->getSortArray($sort));
+    		->order($this->getSortArray($sort))
+    		->limit($this->setPageLimit($rpp))
+    		->page($this->setPage($page));
     	
-    	$questions = $this->paginate('Questions');
+    	
+    	// $questions = $this->paginate('Questions');
     	
     	// itera o array organizando dados
     	$mainData = $this->iterateOutputArray($questions);    	   
